@@ -37,15 +37,16 @@ class LingerItem:
 		print >> outfile, '"%s"' % (self.condition)
 		
 	def ibex_item_text (self, outfile=None):
-		# Print the text of the item in Ibex format
-		if string.count(self.itemtext, '\n') > 1:
-			# item already has manual line breaks
-			wrappedtext = self.itemtext
-		else:
-			# wrap the text ourself
-			wrappedtext = textwrap.fill(self.itemtext, self.maxwidth)
-		# Print the sentence with any trailing newline deleted
-		print >> outfile, '			"DashedSentence", {s: %r},' % (wrappedtext.rstrip('\n'))
+		if self.itemtext is not "":
+				# Print the text of the item in Ibex format
+				if string.count(self.itemtext, '\n') > 1:
+					# item already has manual line breaks
+					wrappedtext = self.itemtext
+				else:
+					# wrap the text ourself
+					wrappedtext = textwrap.fill(self.itemtext, self.maxwidth)
+				# Print the sentence with any trailing newline deleted
+				print >> outfile, '			"DashedSentence", {s: %r},' % (wrappedtext.rstrip('\n'))
 
 	def ibex_comprehension_questions(self, outfile=None):
 		# Print each comprehension question in Ibex format
@@ -68,7 +69,9 @@ class LingerItem:
 			headcharacter = "S"
 		# Print the entire item in Ibex format
 		print >> outfile, '["%s_%s_%s",' % (headcharacter, self.condition, self.itemname)
+		# Print the text if there is any
 		self.ibex_item_text(outfile=outfile)
+		# Print the comp Qs if there are any
 		self.ibex_comprehension_questions(outfile=outfile)
 		print >> outfile, ']%s' % endcharacter
 		
