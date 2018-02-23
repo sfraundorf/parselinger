@@ -1,42 +1,6 @@
 import textwrap
 import string
 
-class ComprehensionQuestion:
-	"""A comprehension question for a self-paced
-	reading item."""
-	def __init__(self):
-		self.answer = True
-		self.text = ""
-		
-	def print_question (self, outfile=None):
-		# Print the comprehension question
-		print >> outfile, "? %s %s" % (self.text, self.letter_answer())
-		
-	def ibex_question (self, outfile=None, lastquestion=True):
-		# End with a comma only if another question follows
-		if lastquestion:
-			endcharacter = ''
-		else:
-			endcharacter = ','
-		# Print the comprehension question in Ibex format
-		print >> outfile, '			"Question", {q: "%s", hasCorrect: %d},' % (self.text, self.binary_answer())
-		print >> outfile, '			"Separator", {transfer: 1000, normalMessage: "  ", errorMessage: "WRONG!"}%s' % (endcharacter)
-		
-	def letter_answer (self):
-		# Get the question answer as a Y or an N
-		if self.answer == True:
-			return 'Y'
-		else:
-		 	return 'N'
-		 	
-	def binary_answer (self):
-		# Get the question answer as a 0 (Yes) or a 1 (No)
-		# (ordered to match the display order)
-		if self.answer == True:
-			return 0
-		else:
-			return 1
-
 class LingerItem:
 	"""An item to be presented in Linger or WebSPR."""
 	def __init__(self):
@@ -47,6 +11,13 @@ class LingerItem:
 		self.compquestions = []
 		self.maxwidth = 55
 		self.messagetime = 1000
+		
+	def get_end_character(self, lastquestion=True):
+		# For Ibex items, end with a comma iff another question follows
+		if lastquestion:
+			return ''
+		else:
+			return ','
 		
 	def print_condition_data (self, outfile=None):
 		# Print the condition data
@@ -106,7 +77,26 @@ class LingerItem:
 		print >> outfile, '["%s_%s_%s",' % (headcharacter, self.condition, self.itemname)
 		self.ibex_item_text(outfile=outfile)
 		self.ibex_comprehension_questions(outfile=outfile)
-		print >> outfile, ']%s' % endcharacter		
+		print >> outfile, ']%s' % endcharacter
+		
+class LingerQuestion:
+	"""A question of some form for a Linger item."""
+	def __init__(self):
+		self.text = ""
+		
+	def print_question (self, outfile=None):
+		# Generic printing of a comprehension question
+		print >> outfile, "? %s" % (self.text)
+
+	def ibex_question (self, outfile=None, lastquestion=True):
+		# End with a comma only if another question follows
+		if lastquestion:
+			endcharacter = ''
+		else:
+			endcharacter = ','
+		# Print the comprehension question in Ibex format
+		print >> outfile, '			"Question", {q: "%s"},' % (self.text)
+		print >> outfile, '			"Separator", {transfer: 1000, normalMessage: "  ", errorMessage: "WRONG!"}%s' % (endcharacter)				
 		
 class LingerStimulusFile(file):
 	"""A file that contains Linger stimulus items."""
@@ -127,16 +117,20 @@ class LingerStimulusFile(file):
 				# comprehension question
 				if "|" in line:
 					questiondata = line.split('|')
+					questiontext = questiondata[1][1:]
 				else:
 					questiondata = line.split('?')
-				newquestion = ComprehensionQuestion()
-				newquestion.text = questiondata[1][1:] + '?'
+					questiontext = questiondata[1][1:] + '?'
 				if "Y" in questiondata[2][1]:
+					newquestion = YesNoQuestion()
 					newquestion.answer = True
 				elif "N" in questiondata[2][1]:
+					newquestion = YesNoQuestion()				
 					newquestion.answer = False
 				else:
-					print 'Invalid comprehension question answer in item %s: %s' % (currentitem.itemname, questiondata[2])
+					newquestion = MultipleChoiceQuestion()
+					newquestion.answers = str.split(questiondata[2], ',')
+					newquestion.answers = [item.translate(None, ' "\'') for item in newquestion.answers]
 				currentitem.compquestions.append(newquestion)
 			elif line[0] == "\n" or len(line) < 2:
 				# add the completed item to the list
@@ -151,3 +145,50 @@ class LingerStimulusFile(file):
 					currentitem.itemtext = currentitem.itemtext + line
 	
 		return allitems
+		
+class MultipleChoiceQuestion(LingerQuestion):
+	"""A multiple choice comprehension question for a
+	self-paced reading item."""
+	def __init__(self):
+		self.answers = []
+		
+	def ibex_question (self, outfile=None, lastquestion=True):
+		# End with a comma only if another question follows
+		endcharacter = get_end_character(lastquestion)
+		# Print the comprehension question in Ibex format
+		print >> outfile, '			"Question", {q: "%s", as: %d}%s' % (self.text, self.mc_answers(), endcharacter)
+		
+	def mc_answers(self):
+		return ', '.join(['"' + item + '"' for item in self.answers])
+		
+class YesNoQuestion(LingerQuestion):
+	"""A yes/no comprehension question for a self-paced
+	reading item."""
+	def __init__(self):
+		self.answer = True
+		
+	def print_question (self, outfile=None):
+		# Print the comprehension question
+		print >> outfile, "? %s %s" % (self.text, self.letter_answer())
+		
+	def ibex_question (self, outfile=None, lastquestion=True):
+		# End with a comma only if another question follows
+		endcharacter = get_end_character(lastquestion)
+		# Print the comprehension question in Ibex format
+		print >> outfile, '			"Question", {q: "%s", hasCorrect: %d},' % (self.text, self.binary_answer())
+		print >> outfile, '			"Separator", {transfer: 1000, normalMessage: "  ", errorMessage: "WRONG!"}%s' % (endcharacter)
+		
+	def letter_answer (self):
+		# Get the question answer as a Y or an N
+		if self.answer == True:
+			return 'Y'
+		else:
+		 	return 'N'
+		 	
+	def binary_answer (self):
+		# Get the question answer as a 0 (Yes/True) or a 1 (No/False)
+		# (ordered to match the display order)
+		if self.answer == True:
+			return 0
+		else:
+			return 1		
