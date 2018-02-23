@@ -123,9 +123,12 @@ class LingerStimulusFile(file):
 				currentitem.experiment = conditiondata[1]
 				currentitem.itemname = conditiondata[2]
 				currentitem.condition = conditiondata[3]
-			elif line[0] == "?":
+			elif line[0] == "?" or line[0] == "|":
 				# comprehension question
-				questiondata = line.split('?')
+				if "|" in line:
+					questiondata = line.split('|')
+				else:
+					questiondata = line.split('?')
 				newquestion = ComprehensionQuestion()
 				newquestion.text = questiondata[1][1:] + '?'
 				if "Y" in questiondata[2][1]:
