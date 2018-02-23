@@ -133,7 +133,7 @@ class LingerStimulusFile(file):
 				else:
 					newquestion = MultipleChoiceQuestion()
 					newquestion.answers = str.split(questiondata[2], ',')
-					newquestion.answers = [item.translate(None, ' "\'') for item in newquestion.answers]
+					newquestion.answers = [str.lstrip(str.rstrip(item.translate(None, '"\'\n'))) for item in newquestion.answers]
 				newquestion.text = questiontext
 				currentitem.compquestions.append(newquestion)
 			elif line[0] == "\n" or len(line) < 2:
@@ -160,7 +160,7 @@ class MultipleChoiceQuestion(LingerQuestion):
 		# End with a comma only if another question follows
 		endcharacter = self.get_end_character(lastquestion)
 		# Print the comprehension question in Ibex format
-		print >> outfile, '			"Question", {q: "%s", as: %d}%s' % (self.text, self.mc_answers(), endcharacter)
+		print >> outfile, '			"Question", {q: "%s", as: %s}%s' % (self.text, self.mc_answers(), endcharacter)
 		
 	def mc_answers(self):
 		return ', '.join(['"' + item + '"' for item in self.answers])
