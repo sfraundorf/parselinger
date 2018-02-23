@@ -91,17 +91,22 @@ class LingerItem:
 			else:
 				self.compquestions[i].ibex_question(outfile=outfile, lastquestion=False)
 	
-	def print_ibex_item(self, outfile=None, lastitem=False):
+	def print_ibex_item(self, outfile=None, lastitem=False, practice=False):
 		# End with a comma only if another item follows
 		if lastitem:
 			endcharacter = ''
 		else:
 			endcharacter = ','
+		# Add S for critical items or P for practice
+		if practice:
+			headcharacter = "P"
+		else:
+			headcharacter = "S"
 		# Print the entire item in Ibex format
-		print >> outfile, '["%s",' % self.itemname
+		print >> outfile, '["%s_%s_%s",' % (headcharacter, self.condition, self.itemname)
 		self.ibex_item_text(outfile=outfile)
 		self.ibex_comprehension_questions(outfile=outfile)
-		print >> outfile, ']%s' % endcharacter
+		print >> outfile, ']%s' % endcharacter		
 		
 class LingerStimulusFile(file):
 	"""A file that contains Linger stimulus items."""
