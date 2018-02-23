@@ -123,9 +123,9 @@ class LingerStimulusFile(file):
 				questiondata = line.split('?')
 				newquestion = ComprehensionQuestion()
 				newquestion.text = questiondata[1][1:] + '?'
-				if questiondata[2][1] == 'Y':
+				if "Y" in questiondata[2][1]:
 					newquestion.answer = True
-				elif questiondata[2][1] == 'N':
+				elif "N" in questiondata[2][1]:
 					newquestion.answer = False
 				else:
 					print 'Invalid comprehension question answer in item %s: %s' % (currentitem.itemname, questiondata[2])
