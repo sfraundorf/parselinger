@@ -11,14 +11,7 @@ class LingerItem:
 		self.compquestions = []
 		self.maxwidth = 55
 		self.messagetime = 1000
-		
-	def get_end_character(self, lastquestion=True):
-		# For Ibex items, end with a comma iff another question follows
-		if lastquestion:
-			return ''
-		else:
-			return ','
-		
+
 	def print_condition_data (self, outfile=None):
 		# Print the condition data
 		print >> outfile, "# %s %s %s" % (self.experiment, self.itemname, self.condition)
@@ -99,7 +92,14 @@ class LingerQuestion:
 			endcharacter = ','
 		# Print the comprehension question in Ibex format
 		print >> outfile, '			"Question", {q: "%s"},' % (self.text)
-		print >> outfile, '			"Separator", {transfer: 1000, normalMessage: "  ", errorMessage: "WRONG!"}%s' % (endcharacter)				
+		print >> outfile, '			"Separator", {transfer: 1000, normalMessage: "  ", errorMessage: "WRONG!"}%s' % (endcharacter)		
+				
+	def get_end_character(self, lastquestion=True):
+		# For Ibex items, end with a comma iff another question follows
+		if lastquestion:
+			return ''
+		else:
+			return ','						
 		
 class LingerStimulusFile(file):
 	"""A file that contains Linger stimulus items."""
@@ -157,7 +157,7 @@ class MultipleChoiceQuestion(LingerQuestion):
 		
 	def ibex_question (self, outfile=None, lastquestion=True):
 		# End with a comma only if another question follows
-		endcharacter = get_end_character(lastquestion)
+		endcharacter = self.get_end_character(lastquestion)
 		# Print the comprehension question in Ibex format
 		print >> outfile, '			"Question", {q: "%s", as: %d}%s' % (self.text, self.mc_answers(), endcharacter)
 		
@@ -176,7 +176,7 @@ class YesNoQuestion(LingerQuestion):
 		
 	def ibex_question (self, outfile=None, lastquestion=True):
 		# End with a comma only if another question follows
-		endcharacter = get_end_character(lastquestion)
+		endcharacter = self.get_end_character(lastquestion)
 		# Print the comprehension question in Ibex format
 		print >> outfile, '			"Question", {q: "%s", hasCorrect: %d},' % (self.text, self.binary_answer())
 		print >> outfile, '			"Separator", {transfer: 1000, normalMessage: "  ", errorMessage: "WRONG!"}%s' % (endcharacter)
