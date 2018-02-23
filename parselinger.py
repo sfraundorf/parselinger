@@ -92,7 +92,7 @@ class LingerQuestion:
 			endcharacter = ','
 		# Print the comprehension question in Ibex format
 		print >> outfile, '			"Question", {q: "%s"},' % (self.text)
-		print >> outfile, '			"Separator", {transfer: 1000, normalMessage: "  ", errorMessage: "WRONG!"}%s' % (endcharacter)		
+		print >> outfile, '			"Separator", {transfer: 1000, errorMessage: "Wrong, please try to answer the questions correctly."}%s' % (endcharacter)		
 				
 	def get_end_character(self, lastquestion=True):
 		# For Ibex items, end with a comma iff another question follows
@@ -180,8 +180,8 @@ class YesNoQuestion(LingerQuestion):
 		endcharacter = self.get_end_character(lastquestion)
 		# Print the comprehension question in Ibex format
 		print >> outfile, '			"Question", {q: "%s", hasCorrect: %d},' % (self.text, self.binary_answer())
-		print >> outfile, '			"Separator", {transfer: 1000, normalMessage: "  ", errorMessage: "WRONG!"}%s' % (endcharacter)
-		
+		print >> outfile, '			"Separator", {transfer: 1000, errorMessage: "Wrong, please try to answer the questions correctly."}%s' % (endcharacter)
+				
 	def letter_answer (self):
 		# Get the question answer as a Y or an N
 		if self.answer == True:
