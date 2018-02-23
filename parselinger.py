@@ -56,7 +56,7 @@ class LingerItem:
 			else:
 				self.compquestions[i].ibex_question(outfile=outfile, lastquestion=False)
 	
-	def print_ibex_item(self, outfile=None, lastitem=False, practice=False):
+	def print_ibex_item(self, outfile=None, lastitem=False, practice=False, questiononly=False):
 		# End with a comma only if another item follows
 		if lastitem:
 			endcharacter = ''
@@ -65,6 +65,8 @@ class LingerItem:
 		# Add S for critical items or P for practice
 		if practice:
 			headcharacter = "P"
+		elif questiononly:
+			headcharacter = "Q"
 		else:
 			headcharacter = "S"
 		# Print the entire item in Ibex format
@@ -76,7 +78,10 @@ class LingerItem:
 		print >> outfile, ']%s' % endcharacter
 		
 	def print_ibex_practice(self, outfile=None, lastitem=False):
-		self.print_ibex_item(outfile=outfile, lastitem=lastitem, practice=True)
+		self.print_ibex_item(outfile=outfile, lastitem=lastitem, practice=True, questiononly=True)
+		
+	def print_ibex_question(self, outfile=None, lastitem=False):
+		self.print_ibex_item(outfile=outfile, lastitem=lastitem, practice=False, questiononly=True)
 		
 class LingerQuestion:
 	"""A question of some form for a Linger item."""
