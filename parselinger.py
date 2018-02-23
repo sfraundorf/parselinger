@@ -134,6 +134,7 @@ class LingerStimulusFile(file):
 					newquestion = MultipleChoiceQuestion()
 					newquestion.answers = str.split(questiondata[2], ',')
 					newquestion.answers = [item.translate(None, ' "\'') for item in newquestion.answers]
+				newquestion.text = questiontext
 				currentitem.compquestions.append(newquestion)
 			elif line[0] == "\n" or len(line) < 2:
 				# add the completed item to the list
