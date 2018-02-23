@@ -79,6 +79,9 @@ class LingerItem:
 		self.ibex_comprehension_questions(outfile=outfile)
 		print >> outfile, ']%s' % endcharacter
 		
+	def print_ibex_practice(self, outfile=None, lastitem=False):
+		self.print_ibex_item(outfile=outfile, lastitem=lastitem, practice=True)
+		
 class LingerQuestion:
 	"""A question of some form for a Linger item."""
 	def __init__(self):
